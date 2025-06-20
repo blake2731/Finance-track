@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block content %}
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="income-tab" data-bs-toggle="tab" data-bs-target="#income" type="button" role="tab">Income</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses" type="button" role="tab">Expenses</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="debt-tab" data-bs-toggle="tab" data-bs-target="#debt" type="button" role="tab">Debt</button>
+  </li>
+</ul>
+<div class="tab-content mt-3" id="myTabContent">
+  <div class="tab-pane fade show active" id="income" role="tabpanel">
+    <form action="{{ url_for('add_income') }}" method="post" class="row g-3 mb-3">
+      <div class="col-md-4">
+        <input type="number" step="0.01" name="amount" placeholder="Amount" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <input type="text" name="description" placeholder="Description" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100" type="submit">Add</button>
+      </div>
+    </form>
+    <ul class="list-group">
+      {% for inc in incomes %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ inc.description or 'Income' }} - ${{ '%.2f'|format(inc.amount) }}
+        <span class="badge bg-secondary">{{ inc.date.strftime('%Y-%m-%d') }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="tab-pane fade" id="expenses" role="tabpanel">
+    <form action="{{ url_for('add_expense') }}" method="post" class="row g-3 mb-3">
+      <div class="col-md-4">
+        <input type="number" step="0.01" name="amount" placeholder="Amount" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <input type="text" name="description" placeholder="Description" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100" type="submit">Add</button>
+      </div>
+    </form>
+    <ul class="list-group">
+      {% for exp in expenses %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ exp.description or 'Expense' }} - ${{ '%.2f'|format(exp.amount) }}
+        <span class="badge bg-secondary">{{ exp.date.strftime('%Y-%m-%d') }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="tab-pane fade" id="debt" role="tabpanel">
+    <form action="{{ url_for('add_debt') }}" method="post" class="row g-3 mb-3">
+      <div class="col-md-4">
+        <input type="number" step="0.01" name="amount" placeholder="Amount" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <input type="text" name="description" placeholder="Description" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100" type="submit">Add</button>
+      </div>
+    </form>
+    <ul class="list-group">
+      {% for d in debts %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ d.description or 'Debt' }} - ${{ '%.2f'|format(d.amount) }}
+        <span class="badge bg-secondary">{{ d.date.strftime('%Y-%m-%d') }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+<hr>
+<div class="row text-center">
+  <div class="col-md-3"><h5>Total Income</h5><p>${{ '%.2f'|format(total_income) }}</p></div>
+  <div class="col-md-3"><h5>Total Expenses</h5><p>${{ '%.2f'|format(total_expense) }}</p></div>
+  <div class="col-md-3"><h5>Balance</h5><p>${{ '%.2f'|format(balance) }}</p></div>
+  <div class="col-md-3"><h5>Total Debt</h5><p>${{ '%.2f'|format(total_debt) }}</p></div>
+</div>
+<div class="row mt-4">
+  <div class="col-md-6">
+    <canvas id="incomeExpenseChart"></canvas>
+  </div>
+  <div class="col-md-6">
+    <canvas id="debtChart"></canvas>
+  </div>
+</div>
+<script>
+const incomeData = {{ incomes|tojson }};
+const expenseData = {{ expenses|tojson }};
+const debtData = {{ debts|tojson }};
+</script>
+{% endblock %}
